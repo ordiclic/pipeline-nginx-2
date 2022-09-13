@@ -114,7 +114,6 @@ pipeline {
           steps {
              script {
                sh '''
-                   success () {  }
                    docker run --rm aquasec/trivy image -q --no-progress --format table --exit-code 1 --severity CRITICAL juantitor/pipeline-nginx
                '''
              }
