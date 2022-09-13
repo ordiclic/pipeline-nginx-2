@@ -1,8 +1,9 @@
 pipeline {
      environment {
        ID_DOCKER = "${ID_DOCKER_PARAMS}"
-       IMAGE_NAME = "pipeline-nginx-2"
+       IMAGE_NAME = "pipeline-nginx"
        IMAGE_TAG = "latest"
+//       PORT_EXPOSED = "80" à paraméter dans le job
        STAGING = "${ID_DOCKER}-staging"
        PRODUCTION = "${ID_DOCKER}-production"
      }
@@ -23,8 +24,8 @@ pipeline {
                  sh '''
                     echo "Clean Environment"
                     docker rm -f $IMAGE_NAME || echo "container does not exist"
-                    docker run --name $IMAGE_NAME -d -p ${PORT_EXPOSED}:5000 -e PORT=5000 ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG
-                    sleep 5
+                    docker run --name $IMAGE_NAME -d -p ${PORT_EXPOSED}:8000 -e PORT=8000 ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG
+                    sleep 1
                  '''
                }
             }
@@ -34,7 +35,7 @@ pipeline {
            steps {
               script {
                 sh '''
-                    curl http://172.17.0.1:${PORT_EXPOSED} | grep -q "Dimension by HTML5 UP"
+                    curl http://172.17.0.1:${PORT_EXPOSED} | grep -q "Welcome"
                 '''
               }
            }
@@ -85,7 +86,6 @@ pipeline {
           }
         }
      }
-
 
 
      stage('Push image in production and deploy it') {
