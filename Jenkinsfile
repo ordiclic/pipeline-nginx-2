@@ -52,6 +52,7 @@ pipeline {
           }
      }
 
+
      stage ('Login and Push Image on docker hub') {
           agent any
         environment {
@@ -106,6 +107,18 @@ pipeline {
             '''
           }
         }
+     }
+
+     stage ('Test image with Trivy for critical vulnerabilities') {
+          agent any
+          steps {
+             script {
+               sh '''
+                   success () {  }
+                   docker run --rm aquasec/trivy image -q --no-progress --format table --exit-code 1 --severity CRITICAL juantitor/pipeline-nginx
+               '''
+             }
+          }
      }
   }
 }
